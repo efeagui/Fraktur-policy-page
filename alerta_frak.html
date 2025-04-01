@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fraktur - Panel de Alertas</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  
+  <!-- Estilos -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #004E6C;
+      --secondary-color: #0277BD;
+      --accent-color: #FF5722;
+      --light-bg: #F5F9FF;
+    }
+    
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+      background-color: var(--primary-color);
+    }
+    
+    .card {
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover, .btn-primary:focus {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .card-header {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 16px 16px 0 0 !important;
+      padding: 1rem;
+    }
+    
+    .badge-success {
+      background-color: #28a745;
+    }
+    
+    .badge-warning {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    
+    .doctor-card {
+      cursor: pointer;
+      transition: border 0.3s ease;
+    }
+    
+    .doctor-card.selected {
+      border: 2px solid var(--primary-color);
+      background-color: var(--light-bg);
+    }
+    
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    
+    .sidebar {
+      height: calc(100vh - 56px);
+      background-color: white;
+      position: sticky;
+      top: 56px;
+    }
+    
+    .history-item {
+      border-left: 3px solid var(--primary-color);
+      padding-left: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de navegación -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="https://via.placeholder.com/40x40" alt="Fraktur Logo" class="me-2" style="border-radius: 8px;">
+        Fraktur Panel de Alertas
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">
+              <i class="fas fa-bell me-1"></i> Alertas
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fas fa-history me-1"></i> Historial
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logoutBtn">
+              <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container-fluid py-4">
+    <div class="row">
+      <!-- Lista de médicos -->
+      <div class="col-md-4 col-lg-3">
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Médicos</h5>
+            <button class="btn btn-sm btn-light" id="refreshDoctorsBtn">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush" id="doctorsList">
+              <!-- Los médicos se cargarán aquí dinámicamente -->
+              <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando médicos...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Formulario de alerta -->
+      <div class="col-md-5 col-lg-5">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Enviar Alerta</h5>
+          </div>
+          <div class="card-body">
+            <form id="alertForm">
+              <div class="mb-3">
+                <label for="selectedDoctor" class="form-label">Médico seleccionado</label>
+                <input type="text" class="form-control" id="selectedDoctor" readonly placeholder="Selecciona un médico de la lista">
+                <input type="hidden" id="selectedDoctorId">
+              </div>
+              
+              <div class="mb-3">
+                <label for="alertTitle" class="form-label">Título de la alerta</label>
+                <input type="text" class="form-control" id="alertTitle" placeholder="Ej: Recordatorio" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="alertMessage" class="form-label">Mensaje</label>
+                <textarea class="form-control" id="alertMessage" rows="4" placeholder="Escribe el mensaje para el médico..." required></textarea>
+              </div>
+              
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary" id="sendAlertBtn">
+                  <i class="fas fa-paper-plane me-2"></i> Enviar Alerta
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Historial de alertas -->
+      <div class="col-md-3 col-lg-4">
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Historial de Alertas</h5>
+            <div>
+              <select class="form-select form-select-sm" id="historyFilter">
+                <option value="all">Todas</option>
+                <option value="read">Leídas</option>
+                <option value="unread">No leídas</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush" id="alertsHistory">
+              <!-- El historial se cargará aquí dinámicamente -->
+              <div class="p-3 text-center">
+                <p class="text-muted">Selecciona un médico para ver su historial de alertas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast para notificaciones -->
+  <div class="toast-container"></div>
+
+  <!-- Modales -->
+  <div class="modal fade" id="loginModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Iniciar Sesión</h5>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Configuración de Firebase (reemplazar con tus credenciales)
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "fraktur-app.firebaseapp.com",
+      projectId: "fraktur-app",
+      storageBucket: "fraktur-app.appspot.com",
+      messagingSenderId: "TU_MESSAGING_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+    
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    
+    // Elementos DOM
+    const doctorsList = document.getElementById('doctorsList');
+    const alertForm = document.getElementById('alertForm');
+    const selectedDoctorInput = document.getElementById('selectedDoctor');
+    const selectedDoctorIdInput = document.getElementById('selectedDoctorId');
+    const alertsHistory = document.getElementById('alertsHistory');
+    const loginForm = document.getElementById('loginForm');
+    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshDoctorsBtn = document.getElementById('refreshDoctorsBtn');
+    const historyFilter = document.getElementById('historyFilter');
+    
+    // Variables globales
+    let currentUser = null;
+    let selectedDoctor = null;
+    
+    // Comprobar estado de autenticación
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadDoctors();
+        hideLoginModal();
+      } else {
+        showLoginModal();
+      }
+    });
+    
+    // Cargar médicos desde Firestore
+    function loadDoctors() {
+      doctorsList.innerHTML = `
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Cargando médicos...</p>
+        </div>
+      `;
+      
+      db.collection('users')
+        .where('rol', '==', 'Medico')
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            doctorsList.innerHTML = `
+              <div class="p-3 text-center">
+                <p class="text-muted">No se encontraron médicos</p>
+              </div>
+            `;
+            return;
+          }
+          
+          let doctorsHTML = '';
+          snapshot.forEach(doc => {
+            const doctor = doc.data();
+            const doctorId = doc.id;
+            const name = doctor.nombre || 'Sin nombre';
+            const initial = name.charAt(0).toUpperCase();
+            const hasUnreadAlerts = doctor.tieneAlertasPendientes === true;
+            
+            doctorsHTML += `
+              <div class="list-group-item doctor-card p-3" data-id="${doctorId}" data-name="${name}">
+                <div class="d-flex align-items-center">
+                  <div class="avatar me-3">${initial}</div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-0">${name}</h6>
+                    <small class="text-muted">${doctor.especialidad || 'Médico General'}</small>
+                  </div>
+                  ${hasUnreadAlerts ? 
+                    '<span class="badge rounded-pill bg-danger">Pendiente</span>' : 
+                    '<span class="badge rounded-pill bg-secondary">Sin alertas</span>'}
+                </div>
+              </div>
+            `;
+          });
+          
+          doctorsList.innerHTML = doctorsHTML;
+          
+          // Agregar eventos a las tarjetas de médicos
+          document.querySelectorAll('.doctor-card').forEach(card => {
+            card.addEventListener('click', () => {
+              // Deseleccionar tarjeta anterior
+              document.querySelectorAll('.doctor-card').forEach(c => {
+                c.classList.remove('selected');
+              });
+              
+              // Seleccionar tarjeta actual
+              card.classList.add('selected');
+              selectedDoctor = {
+                id: card.dataset.id,
+                name: card.dataset.name
+              };
+              
+              selectedDoctorInput.value = selectedDoctor.name;
+              selectedDoctorIdInput.value = selectedDoctor.id;
+              
+              loadDoctorAlerts(selectedDoctor.id);
+            });
+          });
+        })
+        .catch(error => {
+          console.error('Error al cargar médicos:', error);
+          showToast('Error al cargar la lista de médicos', 'error');
+          doctorsList.innerHTML = `
+            <div class="p-3 text-center">
+              <p class="text-danger">Error al cargar médicos</p>
+              <button class="btn btn-sm btn-outline-primary" onclick="loadDoctors()">
+                <i class="fas fa-redo me-1"></i> Reintentar
+              </button>
+            </div>
+          `;
+        });
+    }
+    
+    // Cargar alertas del médico seleccionado
+    function loadDoctorAlerts(doctorId, filter = 'all') {
+      alertsHistory.innerHTML = `
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Cargando alertas...</p>
+        </div>
+      `;
+      
+      let query = db.collection('alertas_medicos')
+        .where('idMedico', '==', doctorId)
+        .orderBy('fechaEnvio', 'desc');
+      
+      if (filter === 'read') {
+        query = query.where('leido', '==', true);
+      } else if (filter === 'unread') {
+        query = query.where('leido', '==', false);
+      }
+      
+      query.get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            alertsHistory.innerHTML = `
+              <div class="p-3 text-center">
+                <p class="text-muted">No hay alertas ${filter === 'read' ? 'leídas' : filter === 'unread' ? 'pendientes' : ''}</p>
+              </div>
+            `;
+            return;
+          }
+          
+          let alertsHTML = '';
+          snapshot.forEach(doc => {
+            const alert = doc.data();
+            const alertDate = alert.fechaEnvio ? new Date(alert.fechaEnvio.toDate()) : new Date();
+            const formattedDate = alertDate.toLocaleString('es-ES', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+            
+            alerts
