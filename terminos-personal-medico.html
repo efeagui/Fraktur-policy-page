@@ -12,6 +12,7 @@
             margin: 0 auto;
             padding: 20px;
             color: #333;
+            text-align: justify;
         }
         .header {
             background-color: #0D426D;
@@ -49,6 +50,7 @@
         }
         ul, ol {
             padding-left: 20px;
+            text-align: justify;
         }
         li {
             margin-bottom: 10px;
@@ -58,6 +60,24 @@
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
+            text-align: justify;
+        }
+        .alert-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: justify;
+        }
+        .alert-box.blue {
+            background-color: #cfe2ff;
+            color: #0D426D;
+            border: 1px solid #b6d4fe;
+        }
+        .alert-box.green {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
         }
         footer {
             margin-top: 50px;
@@ -66,6 +86,12 @@
             padding: 20px;
             background-color: #f8f9fa;
             border-radius: 8px;
+        }
+        p {
+            text-align: justify;
+        }
+        p:last-child {
+            text-align: left; /* La "colita" de cada párrafo no se justifica */
         }
     </style>
 </head>
@@ -122,7 +148,54 @@
     </div>
 
     <div class="section">
-        <h2>5. Disponibilidad y Horarios</h2>
+        <h2>5. Toma de Decisiones Clínicas</h2>
+        <div class="alert-box blue">
+            <p>FRAKTUR tiene como propósito facilitar una lista de médicos, hospitales y servicios de ambulancia disponibles y cercanos al paciente, y que sea el paciente quien tome la decisión de su médico tratante y en qué hospital será atendido.</p>
+        </div>
+        <p>Si el paciente requiere transporte, también podrá elegir qué compañía de ambulancia desea que lo traslade. FRAKTUR es una aplicación que está diseñada para ser utilizada por profesionales de la salud y pacientes que buscan tomar decisiones informadas sobre su atención médica.</p>
+        
+        <p>Como personal médico que utiliza la plataforma FRAKTUR, usted acepta:</p>
+        <ul>
+            <li>Respetar la decisión del paciente sobre su atención médica.</li>
+            <li>Proporcionar información clara y precisa sobre las opciones de tratamiento disponibles.</li>
+            <li>No influir indebidamente en la decisión del paciente sobre la elección de hospital o servicio de ambulancia.</li>
+            <li>Cooperar con otros profesionales de la salud elegidos por el paciente para garantizar una atención integral.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>6. Gestión de Medicamentos y Tratamientos</h2>
+        <p>Un medicamento es cualquier sustancia que se utiliza para prevenir o tratar una enfermedad o condición médica.</p>
+        
+        <div class="alert-box green">
+            <p>El médico seleccionado por el usuario es responsable de proveer opciones, prescribir y administrar medicamentos de manera segura y efectiva.</p>
+        </div>
+        
+        <div class="nota">
+            <p>Puede ver: Términos y Condiciones para el Personal de Ambulancia<br>
+            Términos y Condiciones para el Personal médico</p>
+        </div>
+        
+        <p>Los pacientes tienen derecho a recibir información sobre los medicamentos y tratamientos que se les administran, y a participar en la toma de decisiones sobre su atención médica.</p>
+        
+        <p>El médico seleccionado por el usuario está autorizado y calificado para prescribir medicamentos. Como personal médico, usted garantiza que cuenta con los conocimientos y certificaciones necesarias para la prescripción segura y eficaz de medicamentos.</p>
+        
+        <div class="alert-box blue">
+            <p>El hospital y/o compañía de ambulancia seleccionado por el usuario, almacena y maneja los medicamentos de forma segura y efectiva para prevenir errores y accidentes.</p>
+        </div>
+        
+        <p>Como personal médico de FRAKTUR, usted se compromete a seguir las siguientes directrices respecto a los medicamentos:</p>
+        <ul>
+            <li>Mantener sus conocimientos actualizados sobre farmacología y tratamientos.</li>
+            <li>Verificar posibles interacciones medicamentosas y alergias antes de prescribir.</li>
+            <li>Documentar con precisión todos los medicamentos administrados o prescritos.</li>
+            <li>Proporcionar indicaciones claras a los pacientes sobre la administración de medicamentos.</li>
+            <li>Reportar cualquier evento adverso relacionado con medicamentos.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>7. Disponibilidad y Horarios</h2>
         <p>El personal médico debe:</p>
         <ul>
             <li>Estar disponible durante los turnos programados y confirmados en la plataforma.</li>
@@ -134,7 +207,7 @@
     </div>
 
     <div class="section">
-        <h2>6. Manejo de Datos Sensibles</h2>
+        <h2>8. Manejo de Datos Sensibles</h2>
         <p>Como personal médico, usted tiene acceso a información sensible de los pacientes. Por lo tanto, debe:</p>
         <ul>
             <li>Tratar toda la información del paciente como estrictamente confidencial.</li>
@@ -147,7 +220,7 @@
     </div>
 
     <div class="section">
-        <h2>7. Compensación y Pagos</h2>
+        <h2>9. Compensación y Pagos</h2>
         <p>La estructura de compensación para el personal médico se basa en:</p>
         <ul>
             <li>Tarifa base por turno completado.</li>
@@ -159,7 +232,7 @@
     </div>
 
     <div class="section">
-        <h2>8. Evaluación y Calidad</h2>
+        <h2>10. Evaluación y Calidad</h2>
         <p>El desempeño del personal médico será evaluado regularmente en base a:</p>
         <ul>
             <li>Calificaciones y comentarios de los pacientes.</li>
@@ -172,7 +245,7 @@
     </div>
 
     <div class="section">
-        <h2>9. Protocolos Médicos</h2>
+        <h2>11. Protocolos Médicos</h2>
         <p>El personal médico debe seguir los protocolos médicos establecidos por FRAKTUR, los cuales:</p>
         <ul>
             <li>Están basados en estándares médicos reconocidos internacionalmente.</li>
@@ -184,7 +257,7 @@
     </div>
 
     <div class="section">
-        <h2>10. Relación Contractual</h2>
+        <h2>12. Relación Contractual</h2>
         <p>La relación entre el personal médico y FRAKTUR:</p>
         <ul>
             <li>No constituye una relación laboral según la legislación hondureña aplicable.</li>
@@ -195,7 +268,7 @@
     </div>
 
     <div class="section">
-        <h2>11. Equipo y Materiales</h2>
+        <h2>13. Equipo y Materiales</h2>
         <p>FRAKTUR proporcionará el equipo y materiales necesarios para la prestación de servicios:</p>
         <ul>
             <li>El personal médico es responsable del cuidado y uso adecuado del equipo asignado.</li>
@@ -206,7 +279,7 @@
     </div>
 
     <div class="section">
-        <h2>12. Terminación</h2>
+        <h2>14. Terminación</h2>
         <p>FRAKTUR puede terminar la relación con el personal médico en caso de:</p>
         <ul>
             <li>Violación de estos términos y condiciones.</li>
@@ -219,17 +292,17 @@
     </div>
 
     <div class="section">
-        <h2>13. Modificaciones a los Términos</h2>
+        <h2>15. Modificaciones a los Términos</h2>
         <p>FRAKTUR se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la aplicación y entrarán en vigor 15 días después de su publicación. El uso continuado de la plataforma después de este período constituye la aceptación de los nuevos términos.</p>
     </div>
 
     <div class="section">
-        <h2>14. Ley Aplicable</h2>
+        <h2>16. Ley Aplicable</h2>
         <p>Estos términos y condiciones se rigen por las leyes de la República de Honduras. Cualquier disputa relacionada con estos términos será resuelta por los tribunales competentes de Honduras.</p>
     </div>
 
     <div class="contact-info">
-        <h2>15. Contacto</h2>
+        <h2>17. Contacto</h2>
         <p>Si tiene preguntas o inquietudes sobre estos términos y condiciones, puede contactarnos:</p>
         <ul>
             <li><strong>Correo electrónico:</strong> frakturhn@gmail.com</li>
